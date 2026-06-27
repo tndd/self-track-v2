@@ -1,0 +1,16 @@
+{
+  "name": "Self-Track v2",
+  "short_name": "Self-Track",
+  "description": "Daily habit and condition tracking with correlation analysis",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#3b82f6",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64",
+      "type": "image/x-icon"
+    }
+  ]
+}

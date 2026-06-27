@@ -1,65 +1,74 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client";
+
+import React, { useState, useEffect, useCallback } from "react";
+import ConditionButtons from "@/components/ConditionButtons";
+import EntryComposer from "@/components/EntryComposer";
+import Timeline, { TimelineEntry } from "@/components/Timeline";
 
 export default function Home() {
+  const [entries, setEntries] = useState<TimelineEntry[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const fetchEntries = useCallback(async () => {
+    try {
+      const res = await fetch("/api/entries");
+      if (res.ok) {
+        const data = await res.json();
+        setEntries(data || []);
+      } else {
+        setEntries([]);
+      }
+    } catch (err) {
+      console.error(err);
+      setEntries([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchEntries();
+  }, [fetchEntries]);
+
+  const handleQuickLog = async (condition: number) => {
+    try {
+      await fetch("/api/entries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ condition }),
+      });
+      fetchEntries();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.tsx file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+    <div className="min-h-screen bg-neutral-50 text-neutral-900 pb-20 font-sans selection:bg-blue-100">
+      <header className="bg-white border-b border-neutral-200 sticky top-0 z-10 px-4 py-4 mb-6 shadow-sm">
+        <h1 className="text-xl font-bold tracking-tight text-neutral-900">Self-Track</h1>
+      </header>
+
+      <main className="max-w-md mx-auto px-4 flex flex-col gap-8">
+        <section>
+          <h2 className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-3 ml-1">Quick Log</h2>
+          <ConditionButtons onLog={handleQuickLog} />
+        </section>
+
+        <section>
+          <EntryComposer onEntryAdded={fetchEntries} />
+        </section>
+
+        <section>
+          <h2 className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-3 ml-1">Timeline</h2>
+          {isLoading ? (
+            <div className="py-12 text-center text-neutral-400 text-sm bg-white rounded-2xl border border-neutral-100">
+              <div className="animate-pulse">Loading entries...</div>
+            </div>
+          ) : (
+            <Timeline entries={entries} />
+          )}
+        </section>
       </main>
     </div>
   );
