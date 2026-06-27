@@ -8,6 +8,7 @@ const withSerwist = require("@serwist/next").default({
 
 const nextConfig: NextConfig = {
   /* config options here */
+  turbopack: {},
 };
 
 export default withSerwist(nextConfig);

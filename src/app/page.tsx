@@ -44,14 +44,17 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-50 text-neutral-900 pb-20 font-sans selection:bg-blue-100">
-      <header className="bg-white border-b border-neutral-200 sticky top-0 z-10 px-4 py-4 mb-6 shadow-sm">
-        <h1 className="text-xl font-bold tracking-tight text-neutral-900">Self-Track</h1>
+    <div className="min-h-screen bg-gray-950 text-white font-sans selection:bg-blue-500/30 overflow-hidden relative">
+      {/* Subtle background glow effect */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-blue-500/10 blur-[120px] rounded-full pointer-events-none -z-10"></div>
+        
+      <header className="bg-gray-900/80 backdrop-blur-md border-b border-gray-800 sticky top-0 z-10 px-4 py-4 mb-6 shadow-sm">
+        <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">Self-Track</h1>
       </header>
 
-      <main className="max-w-md mx-auto px-4 flex flex-col gap-8">
+      <main className="max-w-md mx-auto px-4 flex flex-col gap-8 pb-24 relative z-10">
         <section>
-          <h2 className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-3 ml-1">Quick Log</h2>
+          <h2 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3 ml-1">Quick Log</h2>
           <ConditionButtons onLog={handleQuickLog} />
         </section>
 
@@ -60,9 +63,9 @@ export default function Home() {
         </section>
 
         <section>
-          <h2 className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-3 ml-1">Timeline</h2>
+          <h2 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3 ml-1">Timeline</h2>
           {isLoading ? (
-            <div className="py-12 text-center text-neutral-400 text-sm bg-white rounded-2xl border border-neutral-100">
+            <div className="py-12 text-center text-gray-400 text-sm bg-gray-900/50 rounded-2xl border border-gray-800 backdrop-blur-sm">
               <div className="animate-pulse">Loading entries...</div>
             </div>
           ) : (

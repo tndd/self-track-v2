@@ -49,7 +49,7 @@ export default function Timeline({ entries }: { entries: TimelineEntry[] }) {
   return (
     <div className="flex flex-col gap-4">
       {entries.map((entry) => (
-        <div key={entry.id} className="bg-white p-4 rounded-2xl shadow-sm border border-neutral-100 flex flex-col gap-3">
+        <div key={entry.id} className="bg-gray-900/50 backdrop-blur-sm p-4 rounded-2xl shadow-sm border border-gray-800 flex flex-col gap-3">
           <div className="flex justify-between items-start">
             <div className="flex items-center gap-3">
               {entry.condition !== null && (
@@ -57,25 +57,25 @@ export default function Timeline({ entries }: { entries: TimelineEntry[] }) {
                   {entry.condition}
                 </div>
               )}
-              <div className="text-xs text-neutral-400 font-medium">
+              <div className="text-xs text-gray-400 font-medium">
                 {timeAgo(entry.timestamp)}
               </div>
             </div>
           </div>
           
           {entry.memo && (
-            <p className="text-neutral-700 text-sm whitespace-pre-wrap">{entry.memo}</p>
+            <p className="text-gray-300 text-sm whitespace-pre-wrap">{entry.memo}</p>
           )}
 
           {(entry.entryActions?.length || entry.entrySymptoms?.length) ? (
              <div className="flex flex-wrap gap-2 mt-1">
                {entry.entryActions?.map((ea, idx) => (
-                 <span key={`action-${idx}`} className="bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded-md font-medium border border-blue-100">
+                 <span key={`action-${idx}`} className="bg-indigo-500/20 text-indigo-300 text-xs px-2 py-1 rounded-md font-medium border border-indigo-500/30">
                    {ea.action.name} {ea.intensity > 1 && <span className="opacity-70 ml-1 text-[10px]">x{ea.intensity}</span>}
                  </span>
                ))}
                {entry.entrySymptoms?.map((es, idx) => (
-                 <span key={`symptom-${idx}`} className="bg-red-50 text-red-700 text-xs px-2 py-1 rounded-md font-medium border border-red-100">
+                 <span key={`symptom-${idx}`} className="bg-pink-500/20 text-pink-300 text-xs px-2 py-1 rounded-md font-medium border border-pink-500/30">
                    {es.symptom.name}
                  </span>
                ))}
