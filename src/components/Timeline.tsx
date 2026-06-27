@@ -23,7 +23,7 @@ function timeAgo(dateString: string) {
   if (diffInHours < 24) return `${diffInHours}h ago`;
   const diffInDays = Math.floor(diffInHours / 24);
   if (diffInDays < 7) return `${diffInDays}d ago`;
-  return date.toLocaleDateString();
+  return `${date.getFullYear()}/${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}`;
 }
 
 function getConditionColor(cond: number) {
@@ -57,7 +57,7 @@ export default function Timeline({ entries }: { entries: TimelineEntry[] }) {
                   {entry.condition}
                 </div>
               )}
-              <div className="text-xs text-gray-400 font-medium">
+              <div className="text-xs text-gray-400 font-medium" suppressHydrationWarning>
                 {timeAgo(entry.timestamp)}
               </div>
             </div>

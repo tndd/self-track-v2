@@ -89,13 +89,13 @@ export default function CalendarPage() {
         
         <div className="relative z-10 flex justify-between items-center mb-10">
           <button onClick={prevMonth} className="p-3 rounded-xl bg-gray-800 hover:bg-gray-700 transition-colors shadow-sm text-gray-300 hover:text-white">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" suppressHydrationWarning><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
           </button>
-          <h2 className="text-2xl md:text-3xl font-bold tracking-tight">
-            {currentDate.toLocaleString('default', { month: 'long', year: 'numeric' })}
+          <h2 className="text-2xl md:text-3xl font-bold tracking-tight" suppressHydrationWarning>
+            {currentDate.toLocaleString('ja-JP', { month: 'long', year: 'numeric' })}
           </h2>
           <button onClick={nextMonth} className="p-3 rounded-xl bg-gray-800 hover:bg-gray-700 transition-colors shadow-sm text-gray-300 hover:text-white">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" suppressHydrationWarning><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
           </button>
         </div>
 
