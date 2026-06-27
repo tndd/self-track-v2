@@ -101,8 +101,10 @@ export default function EntryComposer({ onEntryAdded }: { onEntryAdded: () => vo
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4 bg-gray-900/50 backdrop-blur-sm p-5 rounded-2xl shadow-sm border border-gray-800">
-      <h3 className="font-semibold text-lg text-white">New Entry</h3>
+    <form onSubmit={handleSubmit} className="flex flex-col gap-5 glass-panel p-6 rounded-3xl">
+      <h3 className="font-bold text-lg text-slate-100 flex items-center gap-2">
+        <span className="w-1.5 h-4 bg-blue-500 rounded-full"></span> New Entry
+      </h3>
       
       {/* Condition Optional Selection */}
       <div className="flex gap-2">
@@ -111,8 +113,8 @@ export default function EntryComposer({ onEntryAdded }: { onEntryAdded: () => vo
             type="button"
             key={lvl}
             onClick={() => setCondition(condition === lvl ? null : lvl)}
-            className={`flex-1 py-2 rounded-xl text-sm font-semibold transition-colors border ${
-              condition === lvl ? "bg-white text-gray-900 border-white shadow-[0_0_15px_rgba(255,255,255,0.3)]" : "bg-gray-800 text-gray-400 border-gray-700 hover:bg-gray-700 hover:text-white"
+            className={`flex-1 py-3 rounded-2xl text-sm font-bold transition-all duration-300 border ${
+              condition === lvl ? "bg-slate-100 text-slate-900 border-white shadow-[0_0_20px_rgba(255,255,255,0.3)] scale-105" : "bg-slate-800/50 text-slate-400 border-slate-700/50 hover:bg-slate-700/80 hover:text-slate-200"
             }`}
           >
             {lvl}
@@ -121,7 +123,7 @@ export default function EntryComposer({ onEntryAdded }: { onEntryAdded: () => vo
       </div>
       
       <textarea
-        className="w-full bg-gray-950 border border-gray-700 text-white rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none placeholder-gray-500"
+        className="w-full bg-slate-900/50 border border-slate-700/50 text-slate-100 rounded-2xl p-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-none placeholder-slate-500 transition-all duration-300"
         rows={3}
         placeholder="How are you feeling? Any memo?"
         value={memo}
@@ -130,13 +132,13 @@ export default function EntryComposer({ onEntryAdded }: { onEntryAdded: () => vo
       
       {actions.length > 0 && (
         <div>
-          <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Actions</h4>
+          <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Actions</h4>
           <div className="flex flex-wrap gap-2">
             {actions.map((act) => {
               const isSelected = selectedActions[act.id] !== undefined;
               return (
-                <div key={act.id} className={`flex items-center gap-1 rounded-full px-3 py-1.5 text-sm transition-colors border ${isSelected ? 'bg-indigo-500/20 border-indigo-500/50 text-indigo-300' : 'bg-gray-800 border-gray-700 text-gray-400 hover:bg-gray-700 hover:text-white'}`}>
-                   <span onClick={() => toggleAction(act)} className="select-none cursor-pointer">{act.name}</span>
+                <div key={act.id} className={`flex items-center gap-1 rounded-full px-4 py-2 text-sm transition-all duration-300 border ${isSelected ? 'bg-indigo-500/20 border-indigo-400/50 text-indigo-300 shadow-[0_0_10px_rgba(99,102,241,0.2)]' : 'bg-slate-800/50 border-slate-700/50 text-slate-400 hover:bg-slate-700 hover:text-slate-200 hover:scale-105'}`}>
+                   <span onClick={() => toggleAction(act)} className="select-none cursor-pointer font-medium">{act.name}</span>
                    {isSelected && (
                      <input
                        type="number"
@@ -155,7 +157,7 @@ export default function EntryComposer({ onEntryAdded }: { onEntryAdded: () => vo
 
       {symptoms.length > 0 && (
         <div>
-          <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Symptoms</h4>
+          <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Symptoms</h4>
           <div className="flex flex-wrap gap-2">
             {symptoms.map((sym) => {
               const isSelected = selectedSymptoms.has(sym.id);
@@ -164,7 +166,7 @@ export default function EntryComposer({ onEntryAdded }: { onEntryAdded: () => vo
                   type="button"
                   key={sym.id}
                   onClick={() => toggleSymptom(sym.id)}
-                  className={`rounded-full px-3 py-1.5 text-sm transition-colors border ${isSelected ? 'bg-pink-500/20 border-pink-500/50 text-pink-300' : 'bg-gray-800 border-gray-700 text-gray-400 hover:bg-gray-700 hover:text-white'}`}
+                  className={`rounded-full px-4 py-2 text-sm font-medium transition-all duration-300 border ${isSelected ? 'bg-pink-500/20 border-pink-400/50 text-pink-300 shadow-[0_0_10px_rgba(236,72,153,0.2)]' : 'bg-slate-800/50 border-slate-700/50 text-slate-400 hover:bg-slate-700 hover:text-slate-200 hover:scale-105'}`}
                 >
                   {sym.name}
                 </button>
@@ -177,7 +179,7 @@ export default function EntryComposer({ onEntryAdded }: { onEntryAdded: () => vo
       <button
         type="submit"
         disabled={isSubmitting || (!memo && condition === null && Object.keys(selectedActions).length === 0 && selectedSymptoms.size === 0)}
-        className="w-full bg-blue-600 text-white font-semibold rounded-xl py-3 mt-2 disabled:opacity-50 transition-opacity hover:bg-blue-500 shadow-lg shadow-blue-500/20"
+        className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-2xl py-4 mt-4 disabled:opacity-50 transition-all duration-300 hover:shadow-[0_0_20px_rgba(59,130,246,0.4)] hover:-translate-y-0.5 active:scale-95 active:translate-y-0"
       >
         {isSubmitting ? "Saving..." : "Save Entry"}
       </button>

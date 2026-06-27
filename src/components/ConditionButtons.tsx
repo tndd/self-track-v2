@@ -3,11 +3,11 @@
 import React from "react";
 
 const conditionStyles: Record<number, string> = {
-  1: "bg-red-500 text-white hover:bg-red-600",
-  2: "bg-orange-500 text-white hover:bg-orange-600",
-  3: "bg-yellow-400 text-neutral-900 hover:bg-yellow-500",
-  4: "bg-lime-400 text-neutral-900 hover:bg-lime-500",
-  5: "bg-green-500 text-white hover:bg-green-600",
+  1: "bg-gradient-to-br from-rose-500 to-red-600 text-white shadow-red-500/20 border-red-400/20",
+  2: "bg-gradient-to-br from-orange-400 to-amber-600 text-white shadow-orange-500/20 border-orange-400/20",
+  3: "bg-gradient-to-br from-slate-200 to-slate-400 text-slate-800 shadow-slate-500/20 border-slate-300/50",
+  4: "bg-gradient-to-br from-emerald-400 to-green-500 text-white shadow-emerald-500/20 border-emerald-400/20",
+  5: "bg-gradient-to-br from-cyan-400 to-blue-500 text-white shadow-blue-500/20 border-blue-400/20",
 };
 
 const conditionLabels: Record<number, string> = {
@@ -31,10 +31,10 @@ export default function ConditionButtons({ onLog, isLoading }: ConditionButtonsP
           key={level}
           onClick={() => onLog(level)}
           disabled={isLoading}
-          className={`flex-1 flex flex-col items-center justify-center py-3 rounded-2xl shadow-sm font-medium transition-transform active:scale-95 disabled:opacity-50 ${conditionStyles[level]}`}
+          className={`flex-1 flex flex-col items-center justify-center py-4 rounded-2xl shadow-lg border border-white/10 font-medium transition-all duration-300 hover:-translate-y-1 hover:shadow-xl active:scale-90 active:translate-y-0 disabled:opacity-50 disabled:hover:translate-y-0 ${conditionStyles[level]}`}
         >
-          <span className="text-xl font-bold">{level}</span>
-          <span className="text-[10px] mt-1 opacity-90 font-semibold uppercase tracking-wider">{conditionLabels[level]}</span>
+          <span className="text-2xl font-black drop-shadow-sm">{level}</span>
+          <span className="text-[9px] mt-1 opacity-90 font-bold uppercase tracking-widest">{conditionLabels[level]}</span>
         </button>
       ))}
     </div>

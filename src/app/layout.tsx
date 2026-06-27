@@ -25,25 +25,29 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`} suppressHydrationWarning>
-      <body className="bg-gray-950 text-white pb-16" suppressHydrationWarning>
+      <body className="bg-slate-950 text-slate-50 pb-16 antialiased selection:bg-blue-500/30" suppressHydrationWarning>
         {children}
         {/* Bottom Navigation */}
-        <nav className="fixed bottom-0 left-0 right-0 bg-gray-900/80 backdrop-blur-md border-t border-gray-800 px-4 py-2 flex justify-between items-center max-w-md mx-auto pb-safe z-50">
-          <a href="/" className="flex flex-col items-center text-gray-400 hover:text-blue-400">
-            <span className="text-xl">📝</span>
-            <span className="text-[10px] mt-1 font-medium">Home</span>
+        <nav className="fixed bottom-0 left-0 right-0 glass-nav px-2 py-3 flex justify-around items-center max-w-md mx-auto pb-safe z-50 rounded-t-[2rem]">
+          <a href="/" className="flex flex-col items-center group relative w-16">
+            <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <span className="text-2xl mb-1 group-hover:-translate-y-1 transition-transform duration-300 drop-shadow-md">📝</span>
+            <span className="text-[10px] font-bold text-slate-400 group-hover:text-blue-400 transition-colors">Home</span>
           </a>
-          <a href="/calendar" className="flex flex-col items-center text-gray-400 hover:text-blue-400">
-            <span className="text-xl">📅</span>
-            <span className="text-[10px] mt-1 font-medium">Calendar</span>
+          <a href="/calendar" className="flex flex-col items-center group relative w-16">
+            <div className="absolute inset-0 bg-indigo-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <span className="text-2xl mb-1 group-hover:-translate-y-1 transition-transform duration-300 drop-shadow-md">📅</span>
+            <span className="text-[10px] font-bold text-slate-400 group-hover:text-indigo-400 transition-colors">Calendar</span>
           </a>
-          <a href="/analysis" className="flex flex-col items-center text-gray-400 hover:text-blue-400">
-            <span className="text-xl">📊</span>
-            <span className="text-[10px] mt-1 font-medium">Analysis</span>
+          <a href="/analysis" className="flex flex-col items-center group relative w-16">
+            <div className="absolute inset-0 bg-purple-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <span className="text-2xl mb-1 group-hover:-translate-y-1 transition-transform duration-300 drop-shadow-md">📊</span>
+            <span className="text-[10px] font-bold text-slate-400 group-hover:text-purple-400 transition-colors">Analysis</span>
           </a>
-          <a href="/manage" className="flex flex-col items-center text-gray-400 hover:text-blue-400">
-            <span className="text-xl">⚙️</span>
-            <span className="text-[10px] mt-1 font-medium">Manage</span>
+          <a href="/manage" className="flex flex-col items-center group relative w-16">
+            <div className="absolute inset-0 bg-pink-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <span className="text-2xl mb-1 group-hover:-translate-y-1 transition-transform duration-300 drop-shadow-md">⚙️</span>
+            <span className="text-[10px] font-bold text-slate-400 group-hover:text-pink-400 transition-colors">Manage</span>
           </a>
         </nav>
       </body>

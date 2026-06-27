@@ -44,29 +44,39 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white font-sans selection:bg-blue-500/30 overflow-hidden relative">
-      {/* Subtle background glow effect */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-blue-500/10 blur-[120px] rounded-full pointer-events-none -z-10"></div>
+    <div className="min-h-screen font-sans overflow-hidden relative">
+      {/* Dynamic Ambient Background */}
+      <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-gradient-to-b from-blue-500/20 via-indigo-500/10 to-transparent blur-[120px] rounded-full pointer-events-none -z-10 animate-pulse duration-10000"></div>
         
-      <header className="bg-gray-900/80 backdrop-blur-md border-b border-gray-800 sticky top-0 z-10 px-4 py-4 mb-6 shadow-sm">
-        <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">Self-Track</h1>
+      <header className="glass-nav sticky top-0 z-20 px-4 py-4 mb-6 flex justify-between items-center rounded-b-[2rem]">
+        <h1 className="text-2xl font-black tracking-tighter bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent drop-shadow-sm">Self-Track</h1>
+        <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-sm shadow-inner border border-slate-700">
+          👤
+        </div>
       </header>
 
-      <main className="max-w-md mx-auto px-4 flex flex-col gap-8 pb-24 relative z-10">
-        <section>
-          <h2 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3 ml-1">Quick Log</h2>
+      <main className="max-w-md mx-auto px-4 flex flex-col gap-8 pb-32 relative z-10">
+        <section className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <h2 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 ml-1 flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span> Quick Log
+          </h2>
           <ConditionButtons onLog={handleQuickLog} />
         </section>
 
-        <section>
+        <section className="animate-in fade-in slide-in-from-bottom-8 duration-700">
           <EntryComposer onEntryAdded={fetchEntries} />
         </section>
 
-        <section>
-          <h2 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3 ml-1">Timeline</h2>
+        <section className="animate-in fade-in slide-in-from-bottom-12 duration-1000">
+          <h2 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 ml-1 flex items-center gap-2">
+            <span className="w-1 h-3 rounded-full bg-indigo-500"></span> Timeline
+          </h2>
           {isLoading ? (
-            <div className="py-12 text-center text-gray-400 text-sm bg-gray-900/50 rounded-2xl border border-gray-800 backdrop-blur-sm">
-              <div className="animate-pulse">Loading entries...</div>
+            <div className="py-12 text-center text-slate-500 text-sm glass-panel rounded-3xl">
+              <div className="animate-pulse flex flex-col items-center gap-2">
+                <div className="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+                Loading entries...
+              </div>
             </div>
           ) : (
             <Timeline entries={entries} />
