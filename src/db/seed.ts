@@ -12,12 +12,18 @@ if (!process.env.DATABASE_URL) {
 const client = postgres(process.env.DATABASE_URL);
 const db = drizzle(client, { schema });
 
-// Helper to create a Date object aligned to JST timezone calendar days
+// Helper to create a Date object aligned to JST timezone calendar days,
+// correctly handling timezone shifts and boundary overflows (e.g. past midnight in JST).
 function createJstDate(baseDate: Date, jstHour: number, jstMinute: number): Date {
-  const d = new Date(baseDate.getTime());
-  // Set hours in UTC offset by -9 (since JST is UTC+9)
-  d.setUTCHours(jstHour - 9, jstMinute, 0, 0);
-  return d;
+  const jstTime = new Date(baseDate.getTime() + 9 * 60 * 60 * 1000);
+  const jstYear = jstTime.getUTCFullYear();
+  const jstMonth = jstTime.getUTCMonth();
+  const jstDate = jstTime.getUTCDate();
+  
+  // Reconstruct JST timestamp using UTC constructor offset by 9 hours
+  const utcHours = jstHour - 9;
+  const utcTime = Date.UTC(jstYear, jstMonth, jstDate, utcHours, jstMinute, 0, 0);
+  return new Date(utcTime);
 }
 
 async function main() {
