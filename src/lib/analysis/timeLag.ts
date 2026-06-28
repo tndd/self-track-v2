@@ -13,8 +13,8 @@ export function calculateTimeLagCorrelations(
   actionLogs: ActionLog[],
   lagDays: number = 1
 ): CorrelationResult[] {
-  const datesWithScores = new Set(Object.keys(dailyScores));
-  if (datesWithScores.size === 0) return [];
+  const dates = Object.keys(dailyScores).sort();
+  if (dates.length === 0) return [];
 
   const actionIntensities: Record<string, Record<string, number>> = {};
   
@@ -32,13 +32,16 @@ export function calculateTimeLagCorrelations(
     const x: number[] = [];
     const y: number[] = [];
 
-    // For time lag, x is action on day T, y is score on day T + lagDays
-    for (const [actionDate, intensity] of Object.entries(actionIntensities[actionId])) {
-      const targetDate = addDays(actionDate, lagDays);
-      if (datesWithScores.has(targetDate)) {
-        x.push(intensity);
-        y.push(dailyScores[targetDate]);
-      }
+    for (const date of dates) {
+      // Find the score on this date (day T)
+      const score = dailyScores[date];
+      
+      // Find the action intensity on the previous day (day T - lagDays)
+      const prevDate = addDays(date, -lagDays);
+      const intensity = actionIntensities[actionId][prevDate] || 0;
+      
+      x.push(intensity);
+      y.push(score);
     }
 
     const xVariance = new Set(x).size > 1;
@@ -52,7 +55,7 @@ export function calculateTimeLagCorrelations(
     results.push({
       actionId,
       correlation: isNaN(corr) ? 0 : corr,
-      sampleSize: x.length,
+      sampleSize: dates.length,
     });
   }
 

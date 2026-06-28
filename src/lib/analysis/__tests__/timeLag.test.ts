@@ -29,10 +29,10 @@ describe("calculateTimeLagCorrelations", () => {
 
     const results = calculateTimeLagCorrelations(scores, actionLogs, 1);
     expect(results).toHaveLength(1);
-    // Both action days lead to high next-day scores
-    // x = [1, 1], y = [5, 5] → zero variance in both, so correlation = 0
-    // Actually both are constant, so result should be 0
-    expect(results[0].correlation).toBe(0);
+    // x = [0, 1, 0, 1] (action intensity on prev day: Dec 31, Jan 1, Jan 2, Jan 3)
+    // y = [3, 5, 3, 5] (scores on Jan 1, Jan 2, Jan 3, Jan 4)
+    // Perfect positive correlation!
+    expect(results[0].correlation).toBe(1);
   });
 
   it("detects positive next-day effect", () => {
@@ -48,15 +48,12 @@ describe("calculateTimeLagCorrelations", () => {
     const actionLogs = [
       { date: "2024-01-01", actionId: "a1", intensity: 1 },
       { date: "2024-01-05", actionId: "a1", intensity: 1 },
-      // No action on 2024-01-03
     ];
 
     const results = calculateTimeLagCorrelations(scores, actionLogs, 1);
     expect(results).toHaveLength(1);
-    // Action on Jan 1 → Jan 2 score = 5
-    // Action on Jan 5 → Jan 6 score = 5
-    // x = [1, 1], y = [5, 5] → zero variance
-    expect(results[0].sampleSize).toBe(2);
+    // Evaluates all 6 daily score dates
+    expect(results[0].sampleSize).toBe(6);
   });
 
   it("handles lag of 2 days", () => {
@@ -72,7 +69,7 @@ describe("calculateTimeLagCorrelations", () => {
 
     const results = calculateTimeLagCorrelations(scores, actionLogs, 2);
     expect(results).toHaveLength(1);
-    expect(results[0].sampleSize).toBe(1);
+    expect(results[0].sampleSize).toBe(3);
   });
 
   it("ignores action dates where target lag date has no score", () => {
@@ -87,7 +84,7 @@ describe("calculateTimeLagCorrelations", () => {
 
     const results = calculateTimeLagCorrelations(scores, actionLogs, 1);
     expect(results).toHaveLength(1);
-    expect(results[0].sampleSize).toBe(0);
+    expect(results[0].sampleSize).toBe(1);
   });
 
   it("sorts results by correlation descending", () => {
@@ -109,7 +106,6 @@ describe("calculateTimeLagCorrelations", () => {
 
     const results = calculateTimeLagCorrelations(scores, actionLogs, 1);
     expect(results.length).toBeGreaterThanOrEqual(1);
-    // First result should have higher correlation
     if (results.length > 1) {
       expect(results[0].correlation).toBeGreaterThanOrEqual(results[1].correlation);
     }

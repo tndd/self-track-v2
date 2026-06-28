@@ -97,7 +97,6 @@ async function main() {
   for (let i = 30; i >= 0; i--) {
     const baseDate = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
 
-    // 7 JST points per day (translated into proper UTC timestamps)
     const times = [
       { jstHour: 7, jstMinute: 30, label: "wakeup" },
       { jstHour: 10, jstMinute: 0, label: "morning" },
@@ -110,6 +109,7 @@ async function main() {
 
     const isWorkoutDay = (i % 3 === 0);
     const isAlcoholDay = (i % 4 === 0);
+    const isHangoverDay = ((i + 1) % 4 === 0); // Day after alcohol day
     const isHeadacheDay = (i % 5 === 0);
 
     for (const time of times) {
@@ -166,52 +166,78 @@ async function main() {
         }
       }
       else if (isWorkoutDay) {
-        // Curve: 3 -> 4 -> 4 -> 3 -> 5 -> 5 -> 4
+        // High condition day: Average ~4.7 -> rounds to 5 (Blue)
         switch(time.label) {
-          case "wakeup": condition = 3; memo = "起床。少し眠い。"; break;
-          case "morning": condition = 4; daySymptoms.push(highFocus.id); break;
-          case "lunch": condition = 4; break;
-          case "afternoon": condition = 3; break;
-          case "evening": condition = 5; dayActions.push({ actionId: running.id, intensity: 2 }, { actionId: workout.id, intensity: 1 }); memo = "ジムに行ってランニングと筋トレ。最高。"; break;
+          case "wakeup": condition = 4; memo = "すっきりと目覚めた。"; break;
+          case "morning": condition = 5; daySymptoms.push(highFocus.id); break;
+          case "lunch": condition = 5; break;
+          case "afternoon": condition = 4; break;
+          case "evening": condition = 5; dayActions.push({ actionId: running.id, intensity: 2 }, { actionId: workout.id, intensity: 1 }); memo = "ランニングと筋トレ。爽快。"; break;
           case "night": condition = 5; break;
-          case "bedtime": condition = 4; daySymptoms.push(goodSleep.id); break;
+          case "bedtime": condition = 5; daySymptoms.push(goodSleep.id); break;
         }
       } 
       else if (isAlcoholDay) {
-        // Curve: 2 -> 3 -> 3 -> 4 -> 5 -> 3 -> 2
+        // Evening drinking day: Average ~3.3 -> rounds to 3 (Slate)
         switch(time.label) {
-          case "wakeup": condition = 2; memo = "朝から体が重い。"; break;
-          case "morning": condition = 3; dayActions.push({ actionId: coffee.id, intensity: 1 }); break;
+          case "wakeup": condition = 3; break;
+          case "morning": condition = 3; break;
           case "lunch": condition = 3; break;
-          case "afternoon": condition = 4; daySymptoms.push(highFocus.id); break;
-          case "evening": condition = 5; dayActions.push({ actionId: alcohol.id, intensity: 3 }); memo = "飲み会スタート！"; break;
+          case "afternoon": condition = 4; break;
+          case "evening": condition = 5; dayActions.push({ actionId: alcohol.id, intensity: 3 }); memo = "夜は飲み会。楽しくお酒を飲む。"; break;
           case "night": condition = 3; break;
-          case "bedtime": condition = 2; daySymptoms.push(fatigue.id); memo = "飲みすぎて気持ち悪い..."; break;
+          case "bedtime": condition = 2; break;
+        }
+      }
+      else if (isHangoverDay) {
+        // Hangover day (Day after alcohol): Average ~2.1 -> rounds to 2 (Orange)
+        switch(time.label) {
+          case "wakeup": condition = 2; daySymptoms.push(fatigue.id); memo = "昨日のお酒が残っていて頭が重い。"; break;
+          case "morning": condition = 2; break;
+          case "lunch": condition = 2; break;
+          case "afternoon": condition = 2; break;
+          case "evening": condition = 3; break;
+          case "night": condition = 3; break;
+          case "bedtime": condition = 2; break;
         }
       }
       else if (isHeadacheDay) {
-        // Curve: 2 -> 1 -> 3 -> 4 -> 3 -> 3 -> 3
+        // Headache day: Average ~1.4 -> rounds to 1 (Red)
         switch(time.label) {
-          case "wakeup": condition = 2; daySymptoms.push(headache.id); break;
-          case "morning": condition = 1; dayActions.push({ actionId: loxonin.id, intensity: 1 }); daySymptoms.push(headache.id, fatigue.id); memo = "頭痛が限界。ロキソニンを飲む。"; break;
-          case "lunch": condition = 3; memo = "薬が効いてきた。"; break;
-          case "afternoon": condition = 4; break;
-          case "evening": condition = 3; break;
-          case "night": condition = 3; break;
-          case "bedtime": condition = 3; break;
+          case "wakeup": condition = 1; daySymptoms.push(headache.id); memo = "頭痛で目が覚める。動けない。"; break;
+          case "morning": condition = 1; dayActions.push({ actionId: loxonin.id, intensity: 1 }); daySymptoms.push(headache.id); break;
+          case "lunch": condition = 1; break;
+          case "afternoon": condition = 2; daySymptoms.push(fatigue.id); break;
+          case "evening": condition = 2; break;
+          case "night": condition = 2; break;
+          case "bedtime": condition = 1; break;
         }
       }
       else {
-        // Standard baseline day with a nice natural wave
-        // Curve: 3 -> 4 -> 3 -> 2 -> 4 -> 3 -> 3
-        switch(time.label) {
-          case "wakeup": condition = 3; break;
-          case "morning": condition = 4; dayActions.push({ actionId: coffee.id, intensity: 1 }); break;
-          case "lunch": condition = 3; break;
-          case "afternoon": condition = 2; daySymptoms.push(fatigue.id); memo = "15時、少し疲れと眠気が来た。"; break;
-          case "evening": condition = 4; break;
-          case "night": condition = 3; break;
-          case "bedtime": condition = 3; memo = "今日も無事に終了。"; break;
+        // Standard normal day (Some slightly better, some neutral)
+        const isBetterDay = (i % 2 === 0);
+        if (isBetterDay) {
+          // Average ~3.6 -> rounds to 4 (Green)
+          switch(time.label) {
+            case "wakeup": condition = 3; break;
+            case "morning": condition = 4; dayActions.push({ actionId: coffee.id, intensity: 1 }); break;
+            case "lunch": condition = 3; break;
+            case "afternoon": condition = 3; break;
+            case "evening": condition = 4; break;
+            case "night": condition = 4; break;
+            case "bedtime": condition = 4; break;
+          }
+        } else {
+          // Average ~3.0 -> rounds to 3 (Slate)
+          switch(time.label) {
+            case "wakeup": condition = 3; break;
+            case "morning": condition = 3; break;
+            case "lunch": condition = 3; break;
+            case "afternoon": condition = 3; break;
+            case "evening": condition = 3; break;
+            case "night": condition = 3; break;
+            case "bedtime": condition = 3; break;
+          }
         }
       }
 
