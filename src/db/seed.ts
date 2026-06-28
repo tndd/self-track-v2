@@ -12,6 +12,14 @@ if (!process.env.DATABASE_URL) {
 const client = postgres(process.env.DATABASE_URL);
 const db = drizzle(client, { schema });
 
+// Helper to create a Date object aligned to JST timezone calendar days
+function createJstDate(baseDate: Date, jstHour: number, jstMinute: number): Date {
+  const d = new Date(baseDate.getTime());
+  // Set hours in UTC offset by -9 (since JST is UTC+9)
+  d.setUTCHours(jstHour - 9, jstMinute, 0, 0);
+  return d;
+}
+
 async function main() {
   console.log("Seeding started...");
 
@@ -50,7 +58,7 @@ async function main() {
 
     // Exercise
     { groupId: execGroup.id, name: "ランニング", defaultIntensity: 1, sortOrder: 1 },
-    { groupId: execGroup.id, name: "筋トレ", defaultIntensity: 1, sortOrder: 2 },
+    { groupId: execGroup.id, name: "筋トレ", defaultIntensity: 2, sortOrder: 2 },
     { groupId: execGroup.id, name: "ストレッチ", defaultIntensity: 1, sortOrder: 3 },
 
     // Life
@@ -82,22 +90,22 @@ async function main() {
   const goodSleep = seededSymptoms.find(s => s.name === "快眠")!;
   const highFocus = seededSymptoms.find(s => s.name === "集中力◎")!;
 
-  // 4. Generate 30 days of entries (High density, ~7 entries per day for nice curves)
-  console.log("Generating 30 days of highly dense dummy entries for wavy trend graphs...");
+  // 4. Generate 30 days of entries (High density, 7 JST entries per day)
+  console.log("Generating 30 days of JST-aligned dummy entries...");
   const now = new Date();
   
   for (let i = 30; i >= 0; i--) {
     const baseDate = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
 
-    // 7 points per day to create beautiful spline curves
+    // 7 JST points per day (translated into proper UTC timestamps)
     const times = [
-      { hours: 7, minutes: 30, label: "wakeup" },
-      { hours: 10, minutes: 0, label: "morning" },
-      { hours: 12, minutes: 30, label: "lunch" },
-      { hours: 15, minutes: 0, label: "afternoon" },
-      { hours: 18, minutes: 0, label: "evening" },
-      { hours: 20, minutes: 30, label: "night" },
-      { hours: 23, minutes: 0, label: "bedtime" }
+      { jstHour: 7, jstMinute: 30, label: "wakeup" },
+      { jstHour: 10, jstMinute: 0, label: "morning" },
+      { jstHour: 12, jstMinute: 30, label: "lunch" },
+      { jstHour: 15, jstMinute: 0, label: "afternoon" },
+      { jstHour: 18, jstMinute: 0, label: "evening" },
+      { jstHour: 20, jstMinute: 30, label: "night" },
+      { jstHour: 23, jstMinute: 0, label: "bedtime" }
     ];
 
     const isWorkoutDay = (i % 3 === 0);
@@ -105,15 +113,7 @@ async function main() {
     const isHeadacheDay = (i % 5 === 0);
 
     for (const time of times) {
-      // Don't generate future events for today
-      const currentDate = new Date(baseDate);
-      currentDate.setUTCHours(time.hours, time.minutes, 0, 0);
-      
-      // If it's today (i===0) and this time is in the future, skip generating it
-      // Note: Since we want to ensure today's graph looks good regardless of when we run the script,
-      // we'll still generate them but shifted back by the difference so it spans the past 24 hours.
-      // For simplicity, we just generate them using local time offsets so they appear correctly on the graph.
-      // Here we just insert them as-is.
+      const currentDate = createJstDate(baseDate, time.jstHour, time.jstMinute);
 
       let condition = 3;
       let memo = "";
@@ -125,7 +125,47 @@ async function main() {
         dayActions.push({ actionId: vitaminD.id, intensity: 1 });
       }
 
-      if (isWorkoutDay) {
+      // Special case: Today (i === 0) spans full 1 to 5 spectrum with dynamic fluctuations
+      if (i === 0) {
+        switch(time.label) {
+          case "wakeup": 
+            condition = 1; 
+            daySymptoms.push(headache.id);
+            memo = "朝起きた瞬間から最悪の頭痛。ロキソニンを飲む。"; 
+            dayActions.push({ actionId: loxonin.id, intensity: 1 });
+            break;
+          case "morning": 
+            condition = 4; 
+            memo = "薬が劇的に効いて一気に調子が良くなる。"; 
+            break;
+          case "lunch": 
+            condition = 2; 
+            daySymptoms.push(fatigue.id);
+            memo = "お昼すぎ、急激に強い倦怠感に襲われる。"; 
+            break;
+          case "afternoon": 
+            condition = 5; 
+            dayActions.push({ actionId: coffee.id, intensity: 1 });
+            daySymptoms.push(highFocus.id);
+            memo = "コーヒーを飲んで奇跡的な集中力を発揮。絶好調。"; 
+            break;
+          case "evening": 
+            condition = 3; 
+            memo = "仕事が終わり、一時的にニュートラルに戻る。"; 
+            break;
+          case "night": 
+            condition = 5; 
+            dayActions.push({ actionId: running.id, intensity: 2 }, { actionId: workout.id, intensity: 1 });
+            memo = "ジムで汗を流してランニング。非常に充実感がある。"; 
+            break;
+          case "bedtime": 
+            condition = 1; 
+            daySymptoms.push(fatigue.id);
+            memo = "ベッドに入る頃には電池が切れたように疲れ果てる。"; 
+            break;
+        }
+      }
+      else if (isWorkoutDay) {
         // Curve: 3 -> 4 -> 4 -> 3 -> 5 -> 5 -> 4
         switch(time.label) {
           case "wakeup": condition = 3; memo = "起床。少し眠い。"; break;
