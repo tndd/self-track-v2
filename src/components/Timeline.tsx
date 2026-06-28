@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 
 export interface TimelineEntry {
   id: string;
@@ -37,7 +37,14 @@ function getConditionColor(cond: number) {
   }
 }
 
-export default function Timeline({ entries }: { entries: TimelineEntry[] }) {
+interface TimelineProps {
+  entries: TimelineEntry[];
+  onDelete?: (id: string) => void;
+}
+
+export default function Timeline({ entries, onDelete }: TimelineProps) {
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
   if (entries.length === 0) {
     return (
       <div className="py-12 text-center text-slate-500 text-sm glass-panel rounded-3xl border-dashed">
@@ -46,10 +53,22 @@ export default function Timeline({ entries }: { entries: TimelineEntry[] }) {
     );
   }
 
+  const handleDelete = async (id: string) => {
+    setDeletingId(id);
+    onDelete?.(id);
+    // Reset after animation
+    setTimeout(() => setDeletingId(null), 500);
+  };
+
   return (
     <div className="flex flex-col gap-4">
       {entries.map((entry) => (
-        <div key={entry.id} className="glass-panel p-5 rounded-3xl flex flex-col gap-3 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
+        <div
+          key={entry.id}
+          className={`glass-panel p-5 rounded-3xl flex flex-col gap-3 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl group ${
+            deletingId === entry.id ? "opacity-0 scale-95" : ""
+          }`}
+        >
           <div className="flex justify-between items-start">
             <div className="flex items-center gap-3">
               {entry.condition !== null && (
@@ -61,6 +80,17 @@ export default function Timeline({ entries }: { entries: TimelineEntry[] }) {
                 {timeAgo(entry.timestamp)}
               </div>
             </div>
+            {onDelete && (
+              <button
+                onClick={() => handleDelete(entry.id)}
+                className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-slate-500 hover:text-rose-400 p-1.5 rounded-lg hover:bg-rose-500/10"
+                title="Delete entry"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
+            )}
           </div>
           
           {entry.memo && (
