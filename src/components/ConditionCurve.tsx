@@ -22,7 +22,7 @@ interface ConditionCurveProps {
 export default function ConditionCurve({ points }: ConditionCurveProps) {
   if (points.length === 0) return null;
 
-  const chartData = points.map((p) => {
+  let chartData = points.map((p) => {
     const date = new Date(p.timestamp);
     const hours = date.getHours();
     const minutes = date.getMinutes();
@@ -32,6 +32,26 @@ export default function ConditionCurve({ points }: ConditionCurveProps) {
       condition: p.condition,
     };
   });
+
+  // Recharts AreaChart requires at least 2 points to draw an area/line.
+  // If there's only 1 log today, we create a slight horizontal spread so it renders a visible line.
+  if (chartData.length === 1) {
+    const single = chartData[0];
+    const prevTimeValue = Math.max(0, single.timeValue - 30);
+    const nextTimeValue = Math.min(24 * 60, single.timeValue + 30);
+    
+    const formatTime = (val: number) => {
+      const h = Math.floor(val / 60);
+      const m = val % 60;
+      return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+    };
+
+    chartData = [
+      { ...single, time: formatTime(prevTimeValue), timeValue: prevTimeValue },
+      single,
+      { ...single, time: formatTime(nextTimeValue), timeValue: nextTimeValue },
+    ];
+  }
 
   const gradientId = "conditionGradient";
 
@@ -70,6 +90,7 @@ export default function ConditionCurve({ points }: ConditionCurveProps) {
             stroke="#06b6d4"
             strokeWidth={2.5}
             fill={`url(#${gradientId})`}
+            isAnimationActive={true}
             dot={{
               r: 4,
               fill: "#06b6d4",
