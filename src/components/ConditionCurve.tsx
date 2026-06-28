@@ -61,12 +61,14 @@ export default function ConditionCurve({ points }: ConditionCurveProps) {
         <AreaChart data={chartData} margin={{ top: 8, right: 8, bottom: 0, left: -20 }}>
           <defs>
             {/* Area Fill Gradient: Match Timeline Colors (5=Cyan, 4=Green, 3=Slate, 2=Orange, 1=Red) */}
+            {/* Red starts early at 85% to ensure the absolute bottom looks pure dark red, not orange. */}
             <linearGradient id={gradientAreaId} x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#06b6d4" stopOpacity={0.4} />   {/* 5: Cyan/Blue */}
               <stop offset="25%" stopColor="#10b981" stopOpacity={0.3} />   {/* 4: Green */}
               <stop offset="50%" stopColor="#64748b" stopOpacity={0.15} />  {/* 3: Slate */}
-              <stop offset="75%" stopColor="#f97316" stopOpacity={0.3} />   {/* 2: Orange */}
-              <stop offset="100%" stopColor="#ef4444" stopOpacity={0.4} />  {/* 1: Red */}
+              <stop offset="70%" stopColor="#f97316" stopOpacity={0.3} />   {/* 2: Orange */}
+              <stop offset="85%" stopColor="#dc2626" stopOpacity={0.45} />  {/* 1: Deep Red starts early */}
+              <stop offset="100%" stopColor="#dc2626" stopOpacity={0.45} /> {/* 1: Deep Red to bottom */}
             </linearGradient>
             
             {/* Stroke Line Gradient: Match Timeline Colors */}
@@ -74,8 +76,9 @@ export default function ConditionCurve({ points }: ConditionCurveProps) {
               <stop offset="0%" stopColor="#06b6d4" />   {/* 5: Cyan/Blue */}
               <stop offset="25%" stopColor="#10b981" />   {/* 4: Green */}
               <stop offset="50%" stopColor="#64748b" />   {/* 3: Slate */}
-              <stop offset="75%" stopColor="#f97316" />   {/* 2: Orange */}
-              <stop offset="100%" stopColor="#ef4444" />  {/* 1: Red */}
+              <stop offset="70%" stopColor="#f97316" />   {/* 2: Orange */}
+              <stop offset="85%" stopColor="#dc2626" />   {/* 1: Deep Red starts early */}
+              <stop offset="100%" stopColor="#dc2626" />  {/* 1: Deep Red to bottom */}
             </linearGradient>
           </defs>
           <XAxis
