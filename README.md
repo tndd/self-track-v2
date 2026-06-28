@@ -1,36 +1,89 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Self-Track v2
 
-## Getting Started
+Self-Track v2 is a mobile-first, glassmorphic habit and physical condition tracking application. It allows users to record daily logs (conditions, custom actions, symptoms) and dynamically analyzes direct and delayed correlation patterns using statistical metrics.
 
-First, run the development server:
+---
 
+## 🛠 Tech Stack
+
+- **Framework**: Next.js 16+ (App Router), React 19, TypeScript
+- **Database ORM**: Drizzle ORM + PostgreSQL (`postgres` client)
+- **Styling**: Tailwind CSS (Glassmorphism & Mobile-first design system)
+- **Math Engine**: `simple-statistics` for Pearson correlation calculations
+- **Testing**: Vitest for unit & integration test suites
+
+---
+
+## 🚀 Getting Started
+
+### 1. Installation
+Install project dependencies:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Environment Setup
+Configure your database URL by copying `.env.example` to `.env.local` and setting your postgres connection string:
+```bash
+cp .env.example .env.local
+```
+Inside `.env.local`:
+```env
+DATABASE_URL=postgresql://username:password@localhost:5432/self_track_v2
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 3. Running the Project
+Start the development server:
+```bash
+npm run dev
+```
+Open [http://localhost:3000](http://localhost:3000) to view it.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 4. Running Tests
+Run the Vitest test suites (pure unit tests for analysis & API routes with database mocking):
+```bash
+npx vitest run
+```
 
-## Learn More
+### 5. Seeding Realistic Dummy Data
+To populate the database with a high-density, JST-aligned 30-day realistic dataset (perfect for testing graphs and analytical correlations):
+```bash
+npm run db:seed
+```
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📂 Project Structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+src/
+├── app/
+│   ├── api/                # RESTful API Endpoints (CRUD & Analysis)
+│   │   ├── entries/        # GET (cursor-paginated) & POST entries
+│   │   ├── entries/[id]/   # GET / PUT / DELETE single entry
+│   │   ├── actions/        # GET & POST actions
+│   │   ├── actions/[id]/   # PUT & DELETE action
+│   │   ├── action-groups/  # GET & POST action groups
+│   │   ├── symptoms/       # GET & POST symptoms
+│   │   └── analysis/       # Analytical endpoints (ranking, combinations, timelag, daily-scores)
+│   ├── calendar/           # Monthly grid view page
+│   ├── analysis/           # Statistical charts & rankings page
+│   ├── manage/             # Data management dashboard (CRUD interface)
+│   ├── layout.tsx          # Global layout containing the Bottom Navigation
+│   └── page.tsx            # Home page containing today's trend and timeline
+├── components/             # Reusable UI components (ConditionCurve, Timeline, etc.)
+├── db/                     # Drizzle schema, DB client, and seed script
+└── lib/
+    └── analysis/           # Core mathematical analysis engines & loader
+```
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📄 Detailed Specifications & Documentation
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+For detailed specs, deep-dives into database structure, or mathematical details, refer to the files in `docs/`:
+
+*   **Database Specifications**: Detailed schema fields, entity relationships, constraints, and cascade delete settings:
+    ➔ [docs/database_schema.md](file:///Users/tau/repo/dev/self-track-v2/docs/database_schema.md)
+*   **Analytical & Statistical Algorithms**: Mathematical equations (Pearson correlation), time-decay scoring, padding constraints, and next-day lag shifting calculations:
+    ➔ [docs/analysis_algorithms.md](file:///Users/tau/repo/dev/self-track-v2/docs/analysis_algorithms.md)
