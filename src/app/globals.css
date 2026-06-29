@@ -1,63 +1,39 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-:root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
-  
-  --primary: #3b82f6;
-  --primary-foreground: #ffffff;
-  
-  --surface: #ffffff;
-  --surface-border: #e2e8f0;
-  
-  --success: #10b981;
-  --warning: #f59e0b;
-  --danger: #ef4444;
 
-  --condition-5: #10b981; /* Excellent */
-  --condition-4: #34d399; /* Good */
-  --condition-3: #94a3b8; /* Neutral */
-  --condition-2: #fbbf24; /* Poor */
-  --condition-1: #ef4444; /* Terrible */
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0f172a;
-    --foreground: #f8fafc;
-    
-    --primary: #3b82f6;
-    --primary-foreground: #ffffff;
-    
-    --surface: #1e293b;
-    --surface-border: #334155;
+    --background: #f8fafc;
+    --foreground: #0f172a;
+  }
+  
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --background: #020617; /* Very dark slate for deep background */
+      --foreground: #f8fafc;
+    }
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
   }
 }
 
-body {
-  background-color: var(--background);
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+@layer utilities {
+  .glass-nav {
+    @apply bg-slate-900/70 backdrop-blur-xl border-t border-slate-800/80 shadow-[0_-10px_40px_-10px_rgba(0,0,0,0.5)];
   }
+  .glass-panel {
+    @apply bg-slate-800/40 backdrop-blur-md border border-slate-700/50 shadow-xl;
+  }
+  .glass-button {
+    @apply bg-slate-800/80 backdrop-blur-sm border border-slate-700 hover:bg-slate-700 transition-all active:scale-95;
+  }
+}
+
+/* Custom hide scrollbar for sleekness */
+::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
 }
