@@ -1,6 +1,6 @@
 # 統計＆分析アルゴリズム仕様書
 
-このドキュメントでは、Self-Track v2 の分析エンジンで使用される数学的・アルゴリズム的プロセスについて詳しく説明します。コードは [src/lib/analysis/](file:///Users/tau/repo/dev/self-track-v2/src/lib/analysis/) にあります。
+このドキュメントでは、Self-Track v2 の分析エンジンで使用される数学的・アルゴリズム的プロセスについて詳しく説明します。コードは [src/lib/analysis/](../../src/lib/analysis/) にあります。
 
 ---
 

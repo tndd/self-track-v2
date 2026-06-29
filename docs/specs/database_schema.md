@@ -1,6 +1,6 @@
 # データベーススキーマ＆データモデル仕様書
 
-このドキュメントでは、Self-Track v2 プロジェクトにおけるデータベース設計、リレーションシップ、およびデータモデリングの制約について詳しく説明します。Drizzle ORM を使用して、これらの PostgreSQL スキーマを [schema.ts](file:///Users/tau/repo/dev/self-track-v2/src/db/schema.ts) で定義しています。
+このドキュメントでは、Self-Track v2 プロジェクトにおけるデータベース設計、リレーションシップ、およびデータモデリングの制約について詳しく説明します。Drizzle ORM を使用して、これらの PostgreSQL スキーマを [schema.ts](../../src/db/schema.ts) で定義しています。
 
 ---
 
