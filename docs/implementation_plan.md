@@ -43,21 +43,21 @@ gantt
     dateFormat X
     axisFormat %s
 
-    section Foundation
+    section 基盤 (Foundation)
     P1 プロジェクト初期化     :p1, 0, 1
     P2 DB スキーマ            :p2, after p1, 1
 
-    section Core API
+    section コア API (Core API)
     P3 CRUD API              :p3, after p2, 1
 
-    section UI
+    section UI (画面表示)
     P4 ホーム画面            :p4, after p3, 2
     P5 カレンダー・履歴      :p5, after p4, 1
 
-    section Analysis
+    section 分析 (Analysis)
     P6 分析エンジン・ダッシュボード :p6, after p5, 2
 
-    section Polish
+    section 仕上げ (Polish)
     P7 管理・設定・PWA       :p7, after p6, 1
 ```
 
@@ -122,7 +122,7 @@ Drizzle ORM で以下のテーブルを定義:
 
 ---
 
-### Phase 3: CRUD API Routes
+### Phase 3: CRUD API ルート (API Routes)
 
 #### [NEW] `src/app/api/`
 
@@ -144,7 +144,7 @@ Drizzle ORM で以下のテーブルを定義:
 
 ### Phase 4: ホーム画面
 
-メインの記録画面。**一人ツイートのTL** がコア。
+メインの記録画面。**一人ツイートのタイムライン(TL)** がコア。
 
 #### [NEW] `src/app/page.tsx` + 関連コンポーネント
 
@@ -158,7 +158,7 @@ Drizzle ORM で以下のテーブルを定義:
 **UXフロー:**
 1. ユーザーが 1〜5 のボタンをタップ → condition 付きエントリーが即座に作成される
 2. タップ後、下部に Action/Symptom/メモ の追加UIが表示される（任意）
-3. TL に新しいエントリーが追加される
+3. タイムライン(TL) に新しいエントリーが追加される
 
 ---
 

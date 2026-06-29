@@ -1,15 +1,15 @@
-# Testing Policy & Guidelines
+# テスト方針 & ガイドライン
 
-This document outlines the testing strategy, mocking rules, and test structure for Self-Track v2.
+このドキュメントでは、Self-Track v2 におけるテスト戦略、モックに関するルール、およびテスト構成について概説します。
 
 ---
 
-## 🧪 Unit Testing for Mathematical Logic
+## 🧪 数値・分析ロジックのユニットテスト
 
-All analytical functions located in `src/lib/analysis/` must remain pure functions.
-- **No Database Mocking**: Test them directly in unit tests (`__tests__/`) using plain JavaScript objects. Do not introduce database mocks, ORM wrappers, or complex setup code inside these tests. Keep the mathematical logic isolated and directly verifiable.
+`src/lib/analysis/` にあるすべての分析用関数は、純粋関数（pure functions）である必要があります。
+- **データベースモックの禁止**: テストは純粋な JavaScript オブジェクトのみを使用して、ユニットテスト（`__tests__/`）内で直接テストしてください。これらのテスト内にデータベースのモックや ORM ラッパー、複雑なセットアップコードを導入してはいけません。数学的・統計的ロジックが他から分離され、直接検証可能な状態を維持してください。
 
-## 🌐 API Route Testing
+## 🌐 API ルートテスト
 
-API route tests under `src/app/api/__tests__/` must isolate API-level validation and handler logic from real database execution.
-- **Database Mocking**: Use the mocked database client (`vi.mock("@/db")`) to bypass actual database connections. Do not spin up real databases or Docker containers for regular API integration tests.
+`src/app/api/__tests__/` 配下の API ルートテストは、API レベルのバリデーションやハンドラーロジックを実際のデータベース実行から分離する必要があります。
+- **データベースのモック化**: 実際のデータベース接続をバイパスするために、モック化されたデータベースクライアント（`vi.mock("@/db")`）を使用してください。通常の API 統合テストを実行するために、本物のデータベースや Docker コンテナを起動させないでください。

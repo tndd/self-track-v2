@@ -1,15 +1,15 @@
-# UI & UX Styling Guidelines
+# UI & UX スタイリングガイドライン
 
-This document details the design system, specific component implementations, and CSS utilities used in Self-Track v2.
+このドキュメントでは、Self-Track v2 で使用されるデザインシステム、特定のコンポーネント実装、および CSS ユーティリティについて詳しく説明します。
 
 ---
 
-## 💎 Glassmorphic Theme
+## 💎 グラスモフィズム・テーマ (Glassmorphic Theme)
 
-Do not use solid gray or standard dark-mode backgrounds. Utilize `.glass-panel` and `.glass-nav` classes configured in `src/app/globals.css` to achieve a modern, semi-transparent, premium aesthetic.
+単色のグレーや標準的なダークモードの背景は使用しないでください。モダンで半透明感のあるプレミアムな外観を実現するために、`src/app/globals.css` で設定されている `.glass-panel` および `.glass-nav` クラスを利用してください。
 
-## 📊 Trend Graph (`ConditionCurve`)
+## 📊 トレンドグラフ (`ConditionCurve`)
 
-The `ConditionCurve` component (built using Recharts `AreaChart`) displays the daily condition score trends. It must adhere to the following implementation details:
-- **Gradient Mapping**: Map the condition score colors using a 5-stop top-to-bottom linear gradient using the exact hex colors defined in the global design tokens (Scores 1–5).
-- **1-Point Dataset Handling**: Handle 1-point datasets gracefully by creating a flat spread or dummy padding so the graph does not crash or look empty.
+Recharts の `AreaChart` を使用して作成された `ConditionCurve` コンポーネントは、日次の体調スコアの推移を表示します。以下の実装詳細に必ず従う必要があります：
+- **グラデーションマッピング**: グローバルデザインシステムで定義されている体調スコア 1〜5 の厳密なカラーコードを使用して、上から下へ向かう 5段階の線形グラデーションをマッピングしてください。
+- **1ポイントデータセットのハンドリング**: データセットが 1つしかない場合でも、グラフがクラッシュしたり空白表示になったりしないよう、フラットなラインを描画するかダミーのパディングを設けるなどして適切に処理してください。

@@ -1,60 +1,60 @@
-# Statistical & Analytical Algorithms Specification
+# 統計＆分析アルゴリズム仕様書
 
-This document details the mathematical and algorithmic processes used in the Self-Track v2 analysis engine. The code resides in [src/lib/analysis/](file:///Users/tau/repo/dev/self-track-v2/src/lib/analysis/).
-
----
-
-## 1. Daily Condition Score Calculation (`dailyScore.ts`)
-
-When a user logs their physical condition multiple times a day, we need a single representative daily score. Rather than a simple average, we use a **time-decay spline model** that mimics natural human memory and feeling decay:
-
-### Algorithmic Steps:
-1. **JST (UTC+9) Date Mapping**: Timestamps are grouped by JST date string (`YYYY-MM-DD`).
-2. **Spline Interpolation & Weighting**:
-   - If there is only 1 entry for the day, that score is the daily score.
-   - If there are multiple entries, we weigh them dynamically. Logs entered closer to the evening carry slightly more weight as they summarize the day's feeling, but the mathematical spline decay function smooths the transition between morning, afternoon, and evening scores.
-3. **Decay Factor**: Calculates weights using $W = e^{-\lambda \cdot \Delta t}$, where $\Delta t$ is the hour difference, ensuring that sequential logs are smoothly interpolated.
+このドキュメントでは、Self-Track v2 の分析エンジンで使用される数学的・アルゴリズム的プロセスについて詳しく説明します。コードは [src/lib/analysis/](file:///Users/tau/repo/dev/self-track-v2/src/lib/analysis/) にあります。
 
 ---
 
-## 2. Same-Day Correlation Engine (`correlation.ts`)
+## 1. 日次コンディションスコアの算出 (`dailyScore.ts`)
 
-Measures the statistical relationship between the intensity of a logged action and the daily condition score on the same calendar day.
+ユーザーが1日に複数回体調を記録する場合、その日を代表する単一の日次スコアを算出する必要があります。単純な平均値ではなく、人間の記憶や感覚の自然な減衰を模倣した **時間減衰スプラインモデル（time-decay spline model）** を使用します：
 
-### Pearson Correlation Formula:
-For a specific action $X$ and daily condition scores $Y$ over a period:
+### アルゴリズムの手順：
+1. **JST (UTC+9) 日付マッピング**: タイムスタンプは JST の日付文字列 (`YYYY-MM-DD`) にグループ化されます。
+2. **スプライン補間と重み付け**:
+   - その日のエントリーが1点のみの場合、そのスコアがそのまま日次スコアとなります。
+   - 複数のエントリーがある場合、動的に重み付けを行います。夕方に近い時間帯に記録されたログは、その日の振り返りとしての意味合いが強いため重みがわずかに大きくなりますが、数学的なスプライン減衰関数によって、朝、昼、夜のスコアが滑らかに補間されます。
+3. **減衰係数 (Decay Factor)**: 時間差 $\Delta t$ に対して $W = e^{-\lambda \cdot \Delta t}$ の計算式で重み $W$ を算出し、連続するログが滑らかに補間されるようにします。
+
+---
+
+## 2. 当日相関エンジン (`correlation.ts`)
+
+記録された行動（Action）の強度と、同一カレンダー日における日次コンディションスコアとの統計的な関係性を測定します。
+
+### ピアソンの相関係数（Pearson Correlation Formula）:
+特定のアクション $X$ と、一定期間内の日次コンディションスコア $Y$ について：
 $$r = \frac{\sum (x_i - \bar{x})(y_i - \bar{y})}{\sqrt{\sum (x_i - \bar{x})^2 \sum (y_i - \bar{y})^2}}$$
 
-### ⚠️ Padding Constraint (Variance Rule):
-- **Why it matters**: If we only calculate correlation on days when the action *actually occurred*, the intensity array $X$ might be a constant (e.g. `[1, 1, 1]`). Mathematically, a constant has zero variance ($\sigma^2 = 0$). This causes division-by-zero in the Pearson formula, resulting in `NaN` (or `0`).
-- **Implementation**: The algorithm loops through **every date** in the evaluated range. If the action was not logged on a date, it pads $X$ with `0` intensity. This generates the necessary variance (comparing days *with* the action vs days *without* it), allowing Pearson's $r$ to resolve correctly.
+### ⚠️ パディング制約 (分散のルール):
+- **なぜ重要か**: アクションが *実際に発生した日* のみで相関を計算しようとすると、強度配列 $X$ が定数（例: `[1, 1, 1]`）になってしまうことがあります。数学的には、定数の分散はゼロ ($\sigma^2 = 0$) になるため、ピアソンの式でゼロ除算が発生し、結果が `NaN`（または `0`）になってしまいます。
+- **実装**: アルゴリズムは評価期間内の **すべての日付** をループ処理します。ある日付にアクションが記録されていなかった場合、強度 $X$ を `0` でパディングします。これにより必要な分散が生成され（アクションがあった日と無かった日の比較が可能になり）、ピアソンの相関係数 $r$ が正しく算出されます。
 
 ---
 
-## 3. Next-Day Lag Correlation Engine (`timeLag.ts`)
+## 3. 翌日タイムラグ相関エンジン (`timeLag.ts`)
 
-Identifies delayed effects (e.g. drinking alcohol on Friday causing a headache/hangover on Saturday).
+時間的なずれを伴う影響（例: 金曜日の飲酒が土曜日の頭痛・二日酔いを引き起こすなど）を特定します。
 
-### Time-Lag Alignment:
-Matches the action intensity on day $T - \text{lagDays}$ with the daily score on day $T$.
+### タイムラグの整合性:
+日付 $T - \text{lagDays}$ におけるアクション強度と、日付 $T$ における日次スコアを一致させます。
 
 ```
-[Day T-1 (Action)]  ───(Shift by +LagDays)───>  [Day T (Condition Score)]
-   Alcohol (Int: 3)                               Score: 2 (Hangover)
+[日付 T-1 (アクション)] ───(LagDays分だけシフト)───> [日付 T (コンディションスコア)]
+   飲酒 (強度: 3)                                     スコア: 2 (二日酔い)
 ```
 
-### ⚠️ Padding Constraint (Variance Rule):
-- **Implementation**: Exactly like same-day correlation, the algorithm iterates over **all dates** in the score dataset. For each date $T$, it looks up the action intensity on date $T - \text{lagDays}$. If the action was not taken on the lagged date, it pads the intensity with `0`.
-- **Outcome**: This preserves statistical variance in the lagged dataset, preventing division by zero and allowing correct detection of next-day hangovers or workout recovery improvements.
+### ⚠️ パディング制約 (分散のルール):
+- **実装**: 当日相関とまったく同様に、スコアデータセット内の **すべての日付** を反復処理します。各日付 $T$ について、日付 $T - \text{lagDays}$ のアクション強度を参照します。もしラグが発生した日付に対象アクションが実行されていなかった場合は、強度を `0` でパディングします。
+- **効果**: これにより、ラグを適用したデータセットの統計的分散が維持され、ゼロ除算を防ぐとともに、翌日の二日酔いやワークアウト後の回復向上といった影響を正しく検出できるようになります。
 
 ---
 
-## 4. Combination Action Analysis (`combination.ts`)
+## 4. 組み合わせアクション分析 (`combination.ts`)
 
-Finds the synergistic effects of taking multiple actions together (e.g. "Running + Protein" yielding a better score than either alone).
+複数のアクションを同時に実行したことによる相乗効果を検出します（例: 「ランニング + プロテイン」が単体で行うよりも高いスコアをもたらす、など）。
 
-### Evaluation Steps:
-1. **Grouping**: Action logs are grouped by date to find which actions occurred on the same day.
-2. **Frequency Filtering**: Combinations that have occurred less than the `minFrequency` (default: `2` times) are filtered out to avoid statistical noise.
-3. **Score Averaging**: Computes the average daily score of dates when the specific combination of actions was active.
-4. **Ranking**: Results are sorted descending by the average daily score, identifying the user's most effective habit combinations.
+### 評価手順：
+1. **グループ化**: アクションログを日付ごとにグループ化し、同じ日にどのアクションが実行されたかを特定します。
+2. **頻度フィルタリング**: 統計的ノイズを避けるため、発生回数が最低頻度 `minFrequency`（デフォルト: `2` 回）未満の組み合わせは除外します。
+3. **スコア平均の算出**: 特定の組み合わせが有効だった日付における日次スコアの平均値を計算します。
+4. **Ranking (順位付け)**: 平均日次スコアの降順で結果をソートし、ユーザーにとって最も効果的な習慣の組み合わせを特定します。
