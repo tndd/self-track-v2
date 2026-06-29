@@ -84,6 +84,6 @@ src/
 詳細な仕様、データベース構造の深掘り、数学的詳細については、`docs/` 内の各ファイルを参照してください：
 
 *   **データベース仕様**: 詳細なスキーマフィールド、エンティティ関係、制約、およびカスケード削除の設定：
-    ➔ [docs/database_schema.md](file:///Users/tau/repo/dev/self-track-v2/docs/database_schema.md)
+    ➔ [docs/specs/database_schema.md](file:///Users/tau/repo/dev/self-track-v2/docs/specs/database_schema.md)
 *   **分析＆統計アルゴリズム**: 数式（ピアソン相関）、時間減衰スコアリング、パディング制約、および翌日ラグシフトの計算詳細：
-    ➔ [docs/analysis_algorithms.md](file:///Users/tau/repo/dev/self-track-v2/docs/analysis_algorithms.md)
+    ➔ [docs/specs/analysis_algorithms.md](file:///Users/tau/repo/dev/self-track-v2/docs/specs/analysis_algorithms.md)
